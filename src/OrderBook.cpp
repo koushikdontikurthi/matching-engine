@@ -57,3 +57,30 @@ void OrderBook::addOrder(Order order){
         }
     }
 }
+
+void OrderBook::cancelOrder(uint64_t orderId){
+    auto it = orderIndex.find(orderId);
+    if(it == orderIndex.end()){
+        return;
+    }
+
+    Side side = it->second.first;
+    int64_t price = it->second.second;
+    auto& levels = (side == Side::Buy) ? bids : asks;
+    auto levelIt = levels.find(price);
+    if(levelIt == levels.end()){
+        orderIndex.erase(it);
+        return;
+    }
+    auto& orders = levelIt->second.orders;
+    for(auto orderIt = orders.begin(); orderIt != orders.end(); ++orderIt){
+        if(orderIt->id == orderId){
+            orders.erase(orderIt);
+            if(orders.empty()){
+                levels.erase(levelIt);
+            }
+            orderIndex.erase(it);
+            return;
+        }
+    }
+} 
