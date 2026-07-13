@@ -66,9 +66,9 @@ void OrderBook::cancelOrder(uint64_t orderId){
 
     Side side = it->second.first;
     int64_t price = it->second.second;
-    auto& levels = (side == Side::Buy) ? bids : asks;
-    auto levelIt = levels.find(price);
-    if(levelIt == levels.end()){
+    auto eraseFromLevel = [&](auto& map) {
+    auto levelIt = map.find(price);
+    if(levelIt == map.end()) {
         orderIndex.erase(it);
         return;
     }
@@ -76,11 +76,13 @@ void OrderBook::cancelOrder(uint64_t orderId){
     for(auto orderIt = orders.begin(); orderIt != orders.end(); ++orderIt){
         if(orderIt->id == orderId){
             orders.erase(orderIt);
-            if(orders.empty()){
-                levels.erase(levelIt);
-            }
+            if(orders.empty()) map.erase(levelIt);
             orderIndex.erase(it);
             return;
         }
     }
-} 
+};
+
+if(side == Side::Buy) eraseFromLevel(bids);
+else eraseFromLevel(asks);
+} ;

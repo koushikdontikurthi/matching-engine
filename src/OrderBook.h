@@ -9,7 +9,7 @@
 struct PriceLevel {
     int64_t price;
     std::deque<Order> orders;
-}
+};
 
 class OrderBook {
 public:
@@ -21,4 +21,4 @@ private:
     std::map<int64_t, PriceLevel>asks;
     std::unordered_map<uint64_t, std::pair<Side, int64_t>> orderIndex;
 
-}
+};

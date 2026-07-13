@@ -2,10 +2,10 @@
 #include <cstdint>
 
 enum class Side: uint8_t {
-    Buy, sell
+    Buy, Sell
 };
 
-enum class OrderType: unit8_t {
+enum class OrderType: uint8_t {
     Limit, Market
 };
 
@@ -16,4 +16,4 @@ struct Order {
     int64_t price; // in ticks/cents
     uint64_t quantity; // remaining units to fill
     uint64_t sequence; // monotonic counter for FIFO priority
-}
+};
