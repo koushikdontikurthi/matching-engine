@@ -1,4 +1,5 @@
 #include "OrderBook.h"
+#include "ReplayEngine.h"
 #include <iostream>
 #include <cassert>
 
@@ -146,12 +147,49 @@ void testpricetimePriority(){
 
     std::cout << "testPriceTimePriority passed." << std::endl;
 }
+
+void testReplay(){
+    std::vector<Event> events;
+
+    // Add a sell order
+    Order sell;
+    sell.id = 1;
+    sell.side = Side::Sell;
+    sell.type = OrderType::Limit;
+    sell.price = 100;
+    sell.quantity = 10;
+    sell.sequence = 1;
+
+    events.push_back({EventType::AddOrder, sell, 0});
+
+    // Add a buy order that matches the sell order
+    Order buy;
+    buy.id = 2;
+    buy.side = Side::Buy;
+    buy.type = OrderType::Limit;
+    buy.price = 100;
+    buy.quantity = 5;
+    buy.sequence = 2;
+
+    events.push_back({EventType::AddOrder, buy, 0});
+
+    // Cancel the buy order (should have no effect since it's already filled)
+    events.push_back({EventType::CancelOrder, {}, 1});
+    OrderBook book;
+    ReplayEngine engine;
+    engine.run(events, book);
+
+    assert(book.getBids().empty());
+    assert(book.getAsks().empty());
+    std::cout << "testReplay passed." << std::endl;
+}
 int main(){
     testFullMatch();
     testPartialMatch();
     testNoMatch();
     testCancelOrder();
     testpricetimePriority();
+    testReplay();
     std::cout << "All tests passed!" << std::endl;
     return 0;
 }
