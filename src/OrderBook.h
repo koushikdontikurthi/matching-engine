@@ -15,6 +15,12 @@ class OrderBook {
 public:
     void addOrder(Order order);
     void cancelOrder(uint64_t orderId);
+    const std::map<int64_t, PriceLevel, std::greater<int64_t>>& getBids() const{
+        return bids;
+    }
+    const std::map<int64_t, PriceLevel>& getAsks() const{
+        return asks;
+    }
 
 private:
     std::map<int64_t, PriceLevel, std::greater<int64_t>>bids;
